@@ -2,7 +2,6 @@ package cafeboard.comment;
 
 import cafeboard.member.Member;
 import cafeboard.post.Post;
-import cafeboard.User;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

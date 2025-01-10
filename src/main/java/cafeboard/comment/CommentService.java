@@ -11,10 +11,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class CommentService {
-    @Autowired
-    private CommentRepository commentRepository;
-    @Autowired
-    private PostRepository postRepository;
+
+
+
+    private final CommentRepository commentRepository;
+
+    private final PostRepository postRepository;
+
+    public CommentService(CommentRepository commentRepository, PostRepository postRepository) {
+        this.commentRepository = commentRepository;
+        this.postRepository = postRepository;
+    }
 
     @Transactional
     public Comment createComment(Long postId, Comment comment) {

@@ -1,6 +1,7 @@
 package cafeboard.member;
 
 import cafeboard.ResourceNotFoundException;
+import cafeboard.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -8,11 +9,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class MemberService {
-    @Autowired
-    private MemberRepository memberRepository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final MemberRepository memberRepository;
+
+    public MemberService(MemberRepository memberRepository) {
+        this.memberRepository = memberRepository;
+    }
 
     @Transactional
     public Member signup(Member member) {
@@ -23,7 +25,7 @@ public class MemberService {
             throw new IllegalArgumentException("이미 사용 중인 이메일 주소입니다.");
         }
 
-        member.setPassword(passwordEncoder.encode(member.getPassword()));
+        member.setPassword(SecurityUtils.sha256Encrypt(member.getPassword()));
         return memberRepository.save(member);
     }
 

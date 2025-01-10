@@ -8,8 +8,12 @@ import java.util.List;
 
 @Service
 public class BoardService {
-    @Autowired
-    private BoardRepository boardRepository;
+
+    private final BoardRepository boardRepository;
+
+    public BoardService(BoardRepository boardRepository) {
+        this.boardRepository = boardRepository;
+    }
 
     @Transactional
     public Board createBoard(Board board) {

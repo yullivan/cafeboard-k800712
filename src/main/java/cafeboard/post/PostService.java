@@ -11,10 +11,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class PostService {
-    @Autowired
-    private PostRepository postRepository;
-    @Autowired
-    private BoardRepository boardRepository;
+
+
+
+    private final PostRepository postRepository;
+    private final BoardRepository boardRepository;
+
+    public PostService(PostRepository postRepository, BoardRepository boardRepository) {
+        this.postRepository = postRepository;
+        this.boardRepository = boardRepository;
+    }
 
     @Transactional
     public Post createPost(Long boardId, Post post) {

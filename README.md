@@ -63,6 +63,7 @@
 - Method: DELETE
 - Path: /api/boards/{boardId}
 - Response: 204 No Content
+
 ## 게시글 API
 1. 게시글 생성
 - Method: POST

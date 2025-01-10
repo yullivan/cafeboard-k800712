@@ -1,5 +1,6 @@
 package cafeboard.comment;
 
+import cafeboard.member.Member;
 import cafeboard.post.Post;
 import cafeboard.User;
 import jakarta.persistence.*;
@@ -29,7 +30,8 @@ public class Comment {
     @JoinColumn(name = "post_id")
     private Post post;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User author;
+    @JoinColumn(name = "author_id")
+    private Member author;
 }

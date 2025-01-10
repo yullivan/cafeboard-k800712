@@ -245,3 +245,23 @@ Response Body:
 "totalComments": 15
 }
 }
+## 회원가입 API
+- Method: POST
+- Path: /api/members/signup
+- Request Body:
+{
+"username": "user123",
+"password": "password123",
+"email": "user123@example.com"
+}
+- Response:
+{
+"id": 1,
+"username": "user123",
+"email": "user123@example.com"
+}
+
+## 회원탈퇴 API
+- Method: DELETE
+- Path: /api/members/{memberId}
+- Response: 204 No Content

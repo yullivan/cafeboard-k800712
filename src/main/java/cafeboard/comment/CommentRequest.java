@@ -1,17 +1,11 @@
 package cafeboard.comment;
 
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
+
+@Data
 public class CommentRequest {
+    @NotBlank(message = "댓글 내용은 필수입니다.")
     private String content;
 
-    public CommentRequest(String content) {
-        this.content = content;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
 }

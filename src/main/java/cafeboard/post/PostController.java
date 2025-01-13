@@ -1,18 +1,15 @@
 package cafeboard.post;
 
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
 public class PostController {
-
 
     private final PostService postService;
 
@@ -21,31 +18,38 @@ public class PostController {
     }
 
     @PostMapping("/boards/{boardId}/posts")
-    public ResponseEntity<Post> createPost(@PathVariable Long boardId, @Valid @RequestBody Post post) {
-        Post createdPost = postService.createPost(boardId, post);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdPost);
-
-
-}
+    public ResponseEntity<PostResponse> createPost(@PathVariable Long boardId, @Valid @RequestBody PostRequest postRequest) {
+        Post createdPost = postService.createPost(boardId, postRequest);
+        PostResponse response = new PostResponse(createdPost.getId(), createdPost.getTitle(), createdPost.getContent(), createdPost.getBoardId());
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
 
     @GetMapping("/boards/{boardId}/posts")
-    public ResponseEntity<Page<Post>> getPostsByBoard(@PathVariable Long boardId, Pageable pageable) {
-        return ResponseEntity.ok(postService.getPostsByBoard(boardId, pageable));
+    public ResponseEntity<List<PostListResponse>> getPostsByBoard(@PathVariable Long boardId) {
+        List<Post> posts = postService.getPostsByBoard(boardId);
+        List<PostListResponse> response = posts.stream()
+                .map(post -> new PostListResponse(post.getId(), post.getTitle(), post.getCommentCount()))
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/posts/{postId}")
-    public ResponseEntity<Post> getPost(@PathVariable Long postId) {
-        return ResponseEntity.ok(postService.getPost(postId));
+    public ResponseEntity<PostDetailResponse> getPost(@PathVariable Long postId) {
+        Post post = postService.getPost(postId);
+        PostDetailResponse response = new PostDetailResponse(post.getId(), post.getTitle(), post.getContent(), post.getBoardId(), post.getComments());
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/posts/{postId}")
-    public ResponseEntity<Post> updatePost(@PathVariable Long postId, @Valid @RequestBody Post post) {
-        return ResponseEntity.ok(postService.updatePost(postId, post));
+    public ResponseEntity<PostResponse> updatePost(@PathVariable Long postId, @Valid @RequestBody PostRequest postRequest) {
+        Post updatedPost = postService.updatePost(postId, postRequest);
+        PostResponse response = new PostResponse(updatedPost.getId(), updatedPost.getTitle(), updatedPost.getContent(), updatedPost.getBoardId());
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/posts/{postId}")
-    public ResponseEntity<?> deletePost(@PathVariable Long postId) {
+    public ResponseEntity<Void> deletePost(@PathVariable Long postId) {
         postService.deletePost(postId);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

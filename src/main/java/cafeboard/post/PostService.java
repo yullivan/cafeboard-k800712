@@ -3,16 +3,12 @@ package cafeboard.post;
 import cafeboard.ResourceNotFoundException;
 import cafeboard.board.Board;
 import cafeboard.board.BoardRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
 
 @Service
 public class PostService {
-
-
 
     private final PostRepository postRepository;
     private final BoardRepository boardRepository;
@@ -23,15 +19,18 @@ public class PostService {
     }
 
     @Transactional
-    public Post createPost(Long boardId, Post post) {
+    public Post createPost(Long boardId, PostRequest postRequest) {
         Board board = boardRepository.findById(boardId)
                 .orElseThrow(() -> new ResourceNotFoundException("Board not found with id: " + boardId));
+        Post post = new Post();
+        post.setTitle(postRequest.getTitle());
+        post.setContent(postRequest.getContent());
         post.setBoard(board);
         return postRepository.save(post);
     }
 
-    public Page<Post> getPostsByBoard(Long boardId, Pageable pageable) {
-        return postRepository.findByBoardId(boardId, pageable);
+    public List<Post> getPostsByBoard(Long boardId) {
+        return postRepository.findByBoardId(boardId);
     }
 
     public Post getPost(Long id) {
@@ -40,11 +39,11 @@ public class PostService {
     }
 
     @Transactional
-    public Post updatePost(Long id, Post postDetails) {
+    public Post updatePost(Long id, PostRequest postRequest) {
         Post post = postRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + id));
-        post.setTitle(postDetails.getTitle());
-        post.setContent(postDetails.getContent());
+        post.setTitle(postRequest.getTitle());
+        post.setContent(postRequest.getContent());
         return postRepository.save(post);
     }
 

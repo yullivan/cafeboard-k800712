@@ -2,15 +2,12 @@ package cafeboard.comment;
 
 import cafeboard.ResourceNotFoundException;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -23,43 +20,31 @@ public class CommentController {
     }
 
     @PostMapping("/posts/{postId}/comments")
-    public ResponseEntity<Comment> createComment(@PathVariable Long postId, @Valid @RequestBody Comment comment) {
-        Comment createdComment = commentService.createComment(postId, comment);
+    public ResponseEntity<CommentDto> createComment(@PathVariable Long postId, @Valid @RequestBody CommentRequest request) {
+        CommentDto createdComment = commentService.createComment(postId, request.getContent());
         return ResponseEntity.status(HttpStatus.CREATED).body(createdComment);
-
     }
 
     @PutMapping("/comments/{commentId}")
-    public ResponseEntity<Comment> updateComment(@PathVariable Long commentId, @Valid @RequestBody UpdateCommentRequest request) {
-        return ResponseEntity.ok(commentService.updateComment(commentId, request));
-
+    public ResponseEntity<CommentDto> updateComment(@PathVariable Long commentId, @Valid @RequestBody CommentRequest request) {
+        CommentDto updatedComment = commentService.updateComment(commentId, request.getContent());
+        return ResponseEntity.ok(updatedComment);
     }
 
     @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<?> deleteComment(@PathVariable Long commentId) {
-        try {
-            commentService.deleteComment(commentId);
-            return ResponseEntity.noContent().build();
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
-
+        commentService.deleteComment(commentId);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/posts/{postId}/comments")
-    public ResponseEntity<Map<String, Object>> getCommentsByPost(@PathVariable Long postId, Pageable pageable) {
-        Page<Comment> commentPage = commentService.getCommentsByPost(postId, pageable);
-        Map<String, Object> response = new HashMap<>();
-        response.put("comments", commentPage.getContent());
-        response.put("currentPage", commentPage.getNumber());
-        response.put("totalItems", commentPage.getTotalElements());
-        response.put("totalPages", commentPage.getTotalPages());
-        return ResponseEntity.ok(response);
+    public ResponseEntity<List<CommentDto>> getCommentsByPost(@PathVariable Long postId) {
+        List<CommentDto> comments = commentService.getCommentsByPost(postId);
+        return ResponseEntity.ok(comments);
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<?> handleResourceNotFoundException(ResourceNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
-
 }

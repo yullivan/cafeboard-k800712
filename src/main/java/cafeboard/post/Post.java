@@ -42,67 +42,14 @@ public class Post {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<Comment> comments;
 
-    public Long getId() {
-        return id;
+    @Transient
+    private int commentCount;
+
+    public Long getBoardId() {
+        return board != null ? board.getId() : null;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public @NotBlank(message = "제목은 필수입니다.") String getTitle() {
-        return title;
-    }
-
-    public void setTitle(@NotBlank(message = "제목은 필수입니다.") String title) {
-        this.title = title;
-    }
-
-    public @NotBlank(message = "내용은 필수입니다.") String getContent() {
-        return content;
-    }
-
-    public void setContent(@NotBlank(message = "내용은 필수입니다.") String content) {
-        this.content = content;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public Board getBoard() {
-        return board;
-    }
-
-    public void setBoard(Board board) {
-        this.board = board;
-    }
-
-    public Member getAuthor() {
-        return author;
-    }
-
-    public void setAuthor(Member author) {
-        this.author = author;
-    }
-
-    public List<Comment> getComments() {
-        return comments;
-    }
-
-    public void setComments(List<Comment> comments) {
-        this.comments = comments;
+    public int getCommentCount() {
+        return comments != null ? comments.size() : 0;
     }
 }

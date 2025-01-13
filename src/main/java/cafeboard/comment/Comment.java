@@ -81,4 +81,13 @@ public class Comment {
     public void setAuthor(Member author) {
         this.author = author;
     }
+
+    public Comment(Long id, String content, LocalDateTime createdAt, LocalDateTime updatedAt, Post post, Member author) {
+        this.id = id;
+        this.content = content;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+        this.post = post;
+        this.author = author;
+    }
 }

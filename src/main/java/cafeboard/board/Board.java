@@ -23,10 +23,6 @@ public class Board {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
     public @NotBlank(message = "게시판 이름은 필수입니다.") String getName() {
         return name;
     }

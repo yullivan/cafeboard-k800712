@@ -1,21 +1,28 @@
 package cafeboard.board;
 
 import cafeboard.ResourceNotFoundException;
+import cafeboard.post.Post;
+import cafeboard.post.PostDTO;
+import cafeboard.post.PostRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final PostRepository postRepository;
 
-    public BoardService(BoardRepository boardRepository) {
+    public BoardService(BoardRepository boardRepository, PostRepository postRepository) {
         this.boardRepository = boardRepository;
+        this.postRepository = postRepository;
     }
+
 
     @Transactional
     public Board createBoard(Board board) {
@@ -25,6 +32,18 @@ public class BoardService {
     public List<Board> getAllBoards() {
         return boardRepository.findAll();
     }
+    @Transactional(readOnly = true)
+    public List<PostDTO> getBoardPosts(Long boardId) {
+        Board board = boardRepository.findById(boardId)
+                .orElseThrow(() -> new ResourceNotFoundException("Board not found with id: " + boardId));
+
+        List<Post> posts = postRepository.findByBoardId(boardId);
+        return posts.stream()
+                .map(PostDTO::fromEntity)
+                .collect(Collectors.toList());
+    }
+
+
 
     @Transactional
     public Board updateBoard(Long id, Board boardDetails) {

@@ -1,9 +1,7 @@
 package cafeboard.member;
 
 import cafeboard.ResourceNotFoundException;
-import cafeboard.SecurityUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import cafeboard.config.SecurityUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

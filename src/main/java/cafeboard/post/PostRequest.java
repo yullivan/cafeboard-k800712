@@ -1,9 +1,13 @@
 package cafeboard.post;
 
-public class PostRequest {
-    private String title;
-    private String content;
+import jakarta.validation.constraints.NotBlank;
 
+public class PostRequest {
+    @NotBlank(message = "제목은 필수입니다.")
+    private String title;
+
+    @NotBlank(message = "내용은 필수입니다.")
+    private String content;
     public PostRequest(String title, String content) {
         this.title = title;
         this.content = content;

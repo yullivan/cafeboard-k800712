@@ -1,47 +1,33 @@
 package cafeboard.post;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@Getter
+
 public class PostResponse {
     private Long id;
     private String title;
     private String content;
-    private Long boardId;
+    private int commentCount;
 
-    public PostResponse(Long id, String title, String content, Long boardId) {
+    public PostResponse(Long id, String title, String content, int commentCount) {
         this.id = id;
         this.title = title;
         this.content = content;
-        this.boardId = boardId;
+        this.commentCount = commentCount;
     }
 
-    public Long getId() {
-        return id;
-    }
+    public static PostResponse from(Post updatedPost) {
+        if (updatedPost == null) {
+            return null;
+        }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public Long getBoardId() {
-        return boardId;
-    }
-
-    public void setBoardId(Long boardId) {
-        this.boardId = boardId;
+        return new PostResponse(
+                updatedPost.getId(),
+                updatedPost.getTitle(),
+                updatedPost.getContent(),
+                updatedPost.getCommentCount() // 댓글 수를 가져오는 메서드 호출
+        );
     }
 }

@@ -3,11 +3,20 @@ package cafeboard.board;
 import cafeboard.post.Post;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-@Data
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class Board {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -16,26 +25,18 @@ public class Board {
     @NotBlank(message = "게시판 이름은 필수입니다.")
     private String name;
 
-    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL)
-    private List<Post> posts;
+    private String description;  // 게시판 설명 추가
 
-    public Long getId() {
-        return id;
-    }
+    @OneToMany(mappedBy = "board", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> posts = new ArrayList<>();
 
-    public @NotBlank(message = "게시판 이름은 필수입니다.") String getName() {
-        return name;
-    }
+    @CreationTimestamp
+    private LocalDateTime createdAt; // 생성 시간 추가
 
-    public void setName(@NotBlank(message = "게시판 이름은 필수입니다.") String name) {
-        this.name = name;
-    }
+    @UpdateTimestamp
+    private LocalDateTime updatedAt; // 업데이트 시간 추가
 
-    public List<Post> getPosts() {
-        return posts;
-    }
-
-    public void setPosts(List<Post> posts) {
-        this.posts = posts;
+    public int getPostCount() {
+        return posts.size();
     }
 }

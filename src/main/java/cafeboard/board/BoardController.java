@@ -1,65 +1,51 @@
 package cafeboard.board;
 
-import cafeboard.ResourceNotFoundException;
-import cafeboard.post.PostDTO;
-import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.HashMap;
+import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/boards")
+@CrossOrigin(origins = "http://localhost:3000")
+@RequiredArgsConstructor
 public class BoardController {
-
     private final BoardService boardService;
 
-    public BoardController(BoardService boardService) {
-        this.boardService = boardService;
+    @GetMapping
+    public ResponseEntity<List<BoardResponse>> getAllBoards() {
+        List<Board> boards = boardService.getAllBoards();
+        List<BoardResponse> response = boards.stream()
+                .map(BoardResponse::from) // BoardResponse.from 메서드를 사용하여 변환
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
-    public ResponseEntity<Board> createBoard(@Valid @RequestBody BoardRequest boardRequest) {
-        Board board = new Board();
-        board.setName(boardRequest.getName());
-        Board createdBoard = boardService.createBoard(board);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdBoard);
+    public ResponseEntity<BoardResponse> createBoard(@Valid @RequestBody BoardRequest request) {
+        Board board = boardService.createBoard(request);
+        return ResponseEntity.ok(BoardResponse.from(board));
     }
 
-    @GetMapping("/{boardId}/posts")
-    public ResponseEntity<?> getBoardPosts(@PathVariable Long boardId) {
-        try {
-            List<PostDTO> posts = boardService.getBoardPosts(boardId);
-            return ResponseEntity.ok(posts);
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(e.getErrorResponse());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResourceNotFoundException.ErrorResponse("게시글 목록을 불러오는데 실패했습니다."));
-        }
+    @GetMapping("/{boardId}")
+    public ResponseEntity<BoardResponse> getBoard(@PathVariable Long boardId) {
+        Board board = boardService.getBoard(boardId);
+        return ResponseEntity.ok(BoardResponse.from(board));
     }
 
     @PutMapping("/{boardId}")
-    public ResponseEntity<Board> updateBoard(@PathVariable Long boardId, @Valid @RequestBody Board board) {
-        return ResponseEntity.ok(boardService.updateBoard(boardId, board));
+    public ResponseEntity<BoardResponse> updateBoard(
+            @PathVariable Long boardId,
+            @Valid @RequestBody BoardRequest request) {
+        Board board = boardService.updateBoard(boardId, request);
+        return ResponseEntity.ok(BoardResponse.from(board));
     }
 
     @DeleteMapping("/{boardId}")
-    public ResponseEntity<?> deleteBoard(@PathVariable Long boardId) {
-        try {
-            boardService.deleteBoard(boardId);
-            return ResponseEntity.noContent().build();
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("게시판 삭제 중 오류가 발생했습니다.");
-        }
+    public ResponseEntity<Void> deleteBoard(@PathVariable Long boardId) {
+        boardService.deleteBoard(boardId);
+        return ResponseEntity.noContent().build();
     }
-
 }
-
